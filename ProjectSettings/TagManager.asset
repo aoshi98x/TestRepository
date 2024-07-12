@@ -7,6 +7,7 @@ TagManager:
   - Coin
   - LimitLose
   - Floor
+  - Ring
   layers:
   - Default
   - TransparentFX

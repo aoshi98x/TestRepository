@@ -1,56 +1,96 @@
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    CharacterController playerControl;
-    float movX, movZ;
-    public float speed;
-    public float degreeMultiplier;
-    Vector3 move;
-
-    [Header("SimulatedPhysics")]
-    Vector3 gravity;
+    [Header("Variables")]
+    CharacterController controller;
+    [SerializeField] float movX, movZ;
     float gravityScale = -9.8f;
-    public float jumpForce;
-    
+    [Range(0,5)]
+    public float speed;
+    [Range(1,5)]
+    public int jumpForce;
+    Vector3 movement;
+    [SerializeField] Vector3 gravity;
+
+    [Header ("Multijugador Local")]
+    public string controlPlayerX, controlPlayerZ;  
+
+    [Header ("Gameplay variables")]
+    public int ringCount;
+
     void Start()
     {
-        playerControl = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
     }
 
     void Update()
     {
-        movX = Input.GetAxis("Horizontal");
-        movZ = Input.GetAxis("Vertical");
-
-        move = transform.right * movX + transform.forward * movZ;
+        movX = Input.GetAxis(controlPlayerX);
+        movZ = Input.GetAxis(controlPlayerZ);
         
-        if(movX != 0 || movZ != 0)
-        {
-            transform.Rotate(0, movX * degreeMultiplier, 0);
-            
-            playerControl.SimpleMove(move * speed); 
-        }
-
-        if(Input.GetButtonDown("Jump") && playerControl.isGrounded)
+        MovePlayer();
+        
+        
+        if(Input.GetButtonDown("Jump") && controller.isGrounded)
         {
             JumpPlayer();
         }
-        if(!playerControl.isGrounded)
+
+        if(!controller.isGrounded)
         {
             ApplyGravity();
         }
-       
+        else
+        {
+            gravity.y = -2;
+        }
+        if(Input.GetButtonDown("Pause"))
+        {
+            GameManager.Instance.CheckPause();
+        }
+        if(GameManager.Instance.cachedRing)
+        {
+            StartCoroutine(BreakingHunter());
+        }
+        else{
+            
+            StopCoroutine(BreakingHunter());
+        }
+    }
+    private void OnControllerColliderHit(ControllerColliderHit hit) {
+
+        if(hit.gameObject.CompareTag("Ring"))
+        {
+            ringCount ++;
+            hit.gameObject.SetActive(false);
+            GameManager.Instance.cachedRing = true;
+        }
+    }
+
+    IEnumerator BreakingHunter()
+    {
+        yield return new WaitForSeconds(2.5f);
+        GameManager.Instance.cachedRing = false;
+        
+    }
+    void MovePlayer()
+    {
+        movement = transform.right * movX + transform.forward * movZ;
+        controller.SimpleMove(movement * speed);
     }
     void ApplyGravity()
     {
         gravity.y += gravityScale * Time.deltaTime;
-        playerControl.Move(gravity * Time.deltaTime);
+        controller.Move(gravity * Time.deltaTime);
     }
 
     void JumpPlayer()
     {
         gravity.y = Mathf.Sqrt(gravityScale * -2 *jumpForce);
-        playerControl.Move(gravity * Time.deltaTime);
+        controller.Move(gravity * Time.deltaTime);
     }
 }
+
