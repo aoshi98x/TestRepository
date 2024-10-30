@@ -8,6 +8,7 @@ TagManager:
   - LimitLose
   - Floor
   - Ring
+  - Power
   layers:
   - Default
   - TransparentFX
