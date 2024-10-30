@@ -5,7 +5,7 @@ using UnityEngine;
 public class KirbyControl : MonoBehaviour
 {
     Animator animatorControl;
-    public bool iEated;
+    public bool iEated, eating;
     void Start()
     {
         animatorControl =GetComponent<Animator>();
@@ -15,6 +15,15 @@ public class KirbyControl : MonoBehaviour
     void Update()
     {
         animatorControl.SetBool("Eat", Input.GetButton("Jump"));
+
+        if(Input.GetButton("Jump"))
+        {
+            eating = true;
+            //Va el codigo donde hacemos la absorción del enemigo
+        }
+        else{
+            eating = false;
+        }
         
         if(Input.GetButton("Fire1") && iEated)
         {
@@ -28,7 +37,7 @@ public class KirbyControl : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        if(other.CompareTag("Power"))
+        if(other.CompareTag("Power") && eating)
         {
             iEated = true;
             other.gameObject.SetActive(false);
