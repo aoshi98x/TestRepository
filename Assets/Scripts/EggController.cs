@@ -9,6 +9,7 @@ public class EggController : MonoBehaviour
     public int points;
     [SerializeField]TextMeshProUGUI textPoints;
     public AudioClip gameMusic;
+    float spawningRange;
 
     void Start()
     {
@@ -23,5 +24,13 @@ public class EggController : MonoBehaviour
     void Update()
     {
         textPoints.text = "Points: " + points;
+
+        spawningRange += Time.deltaTime;
+
+        if(spawningRange >= 5f)
+        {
+            Debug.Log("Spawnea Monstruo");
+            spawningRange = 0;  
+        }
     }
 }

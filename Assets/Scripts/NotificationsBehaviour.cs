@@ -33,8 +33,6 @@ public class NotificationsBehaviour : MonoBehaviour
     void Notify()
     {
         pointsDifference = eggController.points - previousPoints;  // Diferencia de puntos
-        Debug.Log(pointsDifference);
-        Debug.Log(previousPoints);
         if(pointsDifference >= 5)
         {
             if (pointsDifference < 10)  // Si ha ganado entre 5 y 9 puntos
